@@ -43,12 +43,7 @@ def UnifyInputSource(source):
 	return StringIO.StringIO(str(source))
 
 class XMLHandler:
-	def __init__(self, target):
-		self._unify = UnifyInputSource(target)
-		self._xmltree = ET.parse(self._unify)
-		self._root = self._xmltree.getroot()
-
-
+	pass
 
 if __name__ == "__main__":
 		pass
