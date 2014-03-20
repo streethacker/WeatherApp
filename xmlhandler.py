@@ -8,6 +8,14 @@ class XMLHandler:
 		self.tree = ET.parse(source)
 		self.root = self.tree.getroot()
 
+	def parse(self, pyName=None):
+		if self.root.tag == "china":
+				parseMethod = getattr(self, "parse_china")
+				parseMethod(pyName)
+		else:
+				parseMethod = getattr(self, "parse_%s" % self.root.tag)
+				parseMethod(pyName)
+
 	def parse_jiangsu(self, pyName=None):
 		self.status = {}
 		if pyName:
