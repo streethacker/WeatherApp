@@ -68,9 +68,9 @@ def main(argv):
 
 	opts_dict = {k:v for k, v in opts}
 
-	if hasattr(opts_dict, "-h") or hasattr(opts_dict, "--help"):
+	if opts_dict.has_key("-h") or opts_dict.has_key("--help"):
 			usage()
-	elif hasattr(opts_dict, "-F") or hasattr(opts_dict, "--field"):
+	elif opts_dict.has_key("-F") or opts_dict.has_key("--field"):
 			field = opts_dict.get("-F") or opts_dict.get("--field")
 			city = opts_dict.get("-c") or opts_dict.get("--city")
 			if field == "china":
@@ -78,13 +78,13 @@ def main(argv):
 					urldata = OpenHTTPResource(target)
 					source = InputUnified(urldata)
 					parser = XMLHandler(source)
-					parser.parse(city)
+					return parser.parse(city)
 			elif field in PROVINCE_LIST:
 					target = URL_HEAD_CONST + field + ".xml"
 					urldata = OpenHTTPResource(target)
 					source = InputUnified(urldata)
 					parser = XMLHandler(source)
-					parser.parse(city)
+					return parser.parse(city)
 			else:
 					raise OutOfRangeException, "Unsupported province of country name."
 	else:
@@ -92,9 +92,16 @@ def main(argv):
 			urldata = OpenHTTPResource(target)
 			source = InputUnified(urldata)
 			parser = XMLHandler(source)
-			parser.parse()
+			return parser.parse()
 
 
 if __name__ == "__main__":
-		main(sys.argv[1:])	
-		
+		result = main(sys.argv[1:])		
+		print "城市：".ljust(25), result.get("cityname")
+		print "天气：".ljust(25), result.get("stateDetailed")
+		print "最高气温：".ljust(25), result.get("temHigh")
+		print "最低气温：".ljust(25), result.get("temLow")
+		print "当前气温：".ljust(25), result.get("temNow")
+		print "风力：".ljust(25), result.get("windState")
+		print "湿度：".ljust(25), result.get("humidity")
+		print "发布时间：".ljust(25), result.get("time")

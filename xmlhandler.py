@@ -30,35 +30,35 @@ class XMLHandler:
 		"""
 		If self.root.tag is not 'china', then this method will be excuted.
 		If parameter pyName is given, a detailed weather report of specific city will be returned as a dictionary:
-			{"cityName":cityName, "stateDetailed":stateDetailed, "temLow":temLow, "temHigh":temHigh, "temNow":temNow, \
-			"winState":winState, "humanity":humanity, "time":time}
+			{"cityname":cityname, "stateDetailed":stateDetailed, "temHigh":temHigh, "temLow":temLow, "temNow":temNow, \
+			"windState":windState, "humidity":humidity, "time":time}
 
 		Otherwise, a brief weather report of all the cities of the province will be returned as a folded dictionary: 
-			{"cityName1":{state of the first city},
-			"cityName2":{state of the second city},
+			{"cityname1":{state of the first city},
+			"cityname2":{state of the second city},
 			...
-			"cityNameX":{state of the Xth city}}
+			"citynameX":{state of the Xth city}}
 		"""
 		self.status = {}
 		if pyName:
 				for city in self.root.findall("city"):
 						if city.get("pyName") == pyName:
-								self.status["cityName"] = city.get("cityName")
+								self.status["cityname"] = city.get("cityname")
 								self.status["stateDetailed"] = city.get("stateDetailed")
-								self.status["temLow"] = city.get("tem2")
-								self.status["temHigh"] = city.get("tem1")
-								self.status["tmpNow"] = city.get("temNow")
-								self.status["winState"] = city.get("winState")
-								self.status["humanity"] = city.get("humanity")
+								self.status["temHigh"] = city.get("tem2")
+								self.status["temLow"] = city.get("tem1")
+								self.status["temNow"] = city.get("temNow")
+								self.status["windState"] = city.get("windState")
+								self.status["humidity"] = city.get("humidity")
 								self.status["time"] = city.get("time")
 
 								break
 
 				return self.status
 		else:
-				extractMethod = lambda d: {k:v for k, v in d.items() if k in ["stateDetailed", "tem1", "tem2", "winState"]}
+				extractMethod = lambda d: {k:v for k, v in d.items() if k in ["stateDetailed", "tem1", "tem2", "windState"]}
 				for city in self.root.findall("city"):
-						self.status[city.get("cityName")] = extractMethod(city.attrib)
+						self.status[city.get("cityname")] = extractMethod(city.attrib)
 
 				return self.status
 
@@ -67,39 +67,39 @@ class XMLHandler:
 		If self.root.tag is 'china', this method will be excuted.
 		If pyName is given, it must within the range: ['xisha', 'nansha', 'diaoyudao'], then the weather report of the specific
 		field will be returned as a dictionary:
-			{"cityName":cityName, "stateDetailed":stateDetailed, "temLow":temLow, "temHigh":temHigh, "winState":winState}
+			{"cityname":cityname, "stateDetailed":stateDetailed, "temHigh":temHigh, "temLow":temLow, "windState":windState}
 
 		Otherwise a brief weather report of all the main cities of china will be returned as a folded dictionary:
-			{"cityName1":{"quName1":quName1, the state of the city},
-			"cityName2":{"quName2":quName2, the state of the city},
+			{"cityname1":{"quName1":quName1, the state of the city},
+			"cityname2":{"quName2":quName2, the state of the city},
 			...
-			"cityNameX":{"quNameX":quNameX, the state of the city}}
+			"citynameX":{"quNameX":quNameX, the state of the city}}
 		"""
 		self.status = {}
 
-		extractMethod = lambda d: {k:v for k, v in d.items() if k in ["quName","stateDetailed", "tem1", "tem2", "winState"]}
+		extractMethod = lambda d: {k:v for k, v in d.items() if k in ["quName","stateDetailed", "tem1", "tem2", "windState"]}
 		if pyName in ["xisha", "nansha", "diaoyudao"]:
 				for city in self.root.findall("city"):
 						if city.get("pyName") == pyName:
-								self.status["cityName"] = city.get("cityName")
+								self.status["cityname"] = city.get("cityname")
 								self.status["stateDetailed"] = city.get("stateDetailed")
 								self.status["temLow"] = city.get("tem2")
 								self.status["temHigh"] = city.get("tem1")
-								self.status["winState"] = city.get("winState")
+								self.status["windState"] = city.get("windState")
 
 								break
 
 				return self.status
 		else:
 				for city in self.root.findall("city"):
-						self.status[city.get("cityName")] = extractMethod(city.attrib)
+						self.status[city.get("cityname")] = extractMethod(city.attrib)
 
 				return self.status
 
 if __name__ == "__main__":
-		import urllib, StringIO
+		import urllib, StringIO, pprint
 		data = urllib.urlopen("http://flash.weather.com.cn/wmaps/xml/jiangsu.xml")
 		source = StringIO.StringIO(data.read())
 		parser = XMLHandler(source)
-		result = parser.parse("nanjing")
-		print result
+		result = parser.parse()
+		pprint.pprint(result)
