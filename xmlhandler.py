@@ -5,18 +5,38 @@ import xml.etree.ElementTree as ET
 
 class XMLHandler:
 	def __init__(self, source):
+		"""
+		Accept a file or file-like object of xml, parse by ET(xml.etree.ElementTree) then
+		get the root Element.
+		"""
 		self.tree = ET.parse(source)
 		self.root = self.tree.getroot()
 
 	def parse(self, pyName=None):
+		"""
+		The parse method plays an role of distributor, selecting the proper parse_xxx method
+		by self-inspection.
+		"""
 		if self.root.tag == "china":
 				parseMethod = getattr(self, "parse_china")
 				parseMethod(pyName)
 		else:
-				parseMethod = getattr(self, "parse_%s" % self.root.tag)
+				parseMethod = getattr(self, "parse_province")
 				parseMethod(pyName)
 
-	def parse_jiangsu(self, pyName=None):
+	def parse_province(self, pyName=None):
+		"""
+		If self.root.tag is not 'china', then this method will be excuted.
+		If parameter pyName is given, a detailed weather report of specific city will be returned as a dictionary:
+			{"cityName":cityName, "stateDetailed":stateDetailed, "temLow":temLow, "temHigh":temHigh, "temNow":temNow, \
+			"winState":winState, "humanity":humanity, "time":time}
+
+		Otherwise, a brief weather report of all the cities of the province will be returned as a folded dictionary: 
+			{"cityName1":{state of the first city},
+			"cityName2":{state of the second city},
+			...
+			"cityNameX":{state of the Xth city}}
+		"""
 		self.status = {}
 		if pyName:
 				for city in self.root.findall("city"):
@@ -41,6 +61,18 @@ class XMLHandler:
 				return self.status
 
 	def parse_china(self, pyName=None):
+		"""
+		If self.root.tag is 'china', this method will be excuted.
+		If pyName is given, it must within the range: ['xisha', 'nansha', 'diaoyudao'], then the weather report of the specific
+		field will be returned as a dictionary:
+			{"cityName":cityName, "stateDetailed":stateDetailed, "temLow":temLow, "temHigh":temHigh, "winState":winState}
+
+		Otherwise a brief weather report of all the main cities of china will be returned as a folded dictionary:
+			{"cityName1":{"quName1":quName1, the state of the city},
+			"cityName2":{"quName2":quName2, the state of the city},
+			...
+			"cityNameX":{"quNameX":quNameX, the state of the city}}
+		"""
 		self.status = {}
 
 		extractMethod = lambda d: {k:v for k, v in d.items() if k in ["quName","stateDetailed", "tem1", "tem2", "winState"]}
