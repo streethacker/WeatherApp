@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+__all__ = ["XMLHandler"]
+
 import xml.etree.ElementTree as ET
 
 class XMLHandler:
@@ -19,10 +21,10 @@ class XMLHandler:
 		"""
 		if self.root.tag == "china":
 				parseMethod = getattr(self, "parse_china")
-				parseMethod(pyName)
+				return parseMethod(pyName)
 		else:
 				parseMethod = getattr(self, "parse_province")
-				parseMethod(pyName)
+				return parseMethod(pyName)
 
 	def parse_province(self, pyName=None):
 		"""
@@ -44,7 +46,7 @@ class XMLHandler:
 								self.status["cityName"] = city.get("cityName")
 								self.status["stateDetailed"] = city.get("stateDetailed")
 								self.status["temLow"] = city.get("tem2")
-								self.status["temHigh"] = city.get"tem1")
+								self.status["temHigh"] = city.get("tem1")
 								self.status["tmpNow"] = city.get("temNow")
 								self.status["winState"] = city.get("winState")
 								self.status["humanity"] = city.get("humanity")
@@ -95,4 +97,9 @@ class XMLHandler:
 				return self.status
 
 if __name__ == "__main__":
-		pass
+		import urllib, StringIO
+		data = urllib.urlopen("http://flash.weather.com.cn/wmaps/xml/jiangsu.xml")
+		source = StringIO.StringIO(data.read())
+		parser = XMLHandler(source)
+		result = parser.parse("nanjing")
+		print result

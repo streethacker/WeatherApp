@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+__all__ = ["SmartRedirectHandler", "DefaultErrorHandler", "OpenHTTPResource"]
+
 import urllib2, urlparse, gzip
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 \
@@ -62,4 +64,7 @@ def OpenHTTPResource(target, etag=None, lastmodified=None, agent=USER_AGENT):
 			raise SchemeFailure, "Please ensure the scheme part of your url is 'http'."
 
 if __name__ == "__main__":
-		pass
+		compressdata = OpenHTTPResource(target = "http://flash.weather.com.cn/wmaps/xml/jiangsu.xml")
+		import main
+		data = main.InputUnified(compressdata)
+		print data.read()
