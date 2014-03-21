@@ -16,6 +16,14 @@ PROVINCE_LIST = ["heilongjiang", "jilin", "liaoning", "hainan", "neimenggu", "xi
 class OutOfRangeException(Exception): pass
 
 def InputUnified(source):
+	"""
+	Unified the input formal of data:
+		already a file or file-like object --> returned directly;
+		a gzip object --> return a StringIO file-like object;
+		a local file path --> return a file object opened by the given path;
+		a url --> return a file-object opened by urlopen() function;
+		a string --> return a StringIO file-linke object.
+	"""
 	if hasattr(source, "read"):
 			if hasattr(source, "headers"):
 					if source.headers.get("Content-Encoding"):
@@ -66,7 +74,7 @@ def main(argv):
 		usage()
 		sys.exit(1)
 
-	opts_dict = {k:v for k, v in opts}
+	opts_dict = {k:v for k, v in opts} #turn (opt, arg) pairs to a dictionary, easy for seeking.
 
 	if opts_dict.has_key("-h") or opts_dict.has_key("--help"):
 			usage()
